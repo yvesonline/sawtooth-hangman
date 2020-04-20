@@ -1,0 +1,2 @@
+sawtooth-sdk==1.2.3
+inquirer==2.6.3

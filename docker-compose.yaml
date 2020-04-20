@@ -94,6 +94,14 @@ services:
     container_name: hangman-tp-py
     depends_on:
       - validator
-    entrypoint: tail -f /dev/null
+    # entrypoint: tail -f /dev/null
     volumes:
     - ./hangman-tp-py/code:/code
+
+  hangman-client-py:
+    build: hangman-client-py
+    container_name: hangman-client-py
+    depends_on:
+      - validator
+    volumes:
+    - ./hangman-client-py/code:/code
