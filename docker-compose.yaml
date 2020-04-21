@@ -105,3 +105,15 @@ services:
       - validator
     volumes:
     - ./hangman-client-py/code:/code
+
+  hangman-web-py:
+    build: hangman-web-py
+    container_name: hangman-web-py
+    depends_on:
+      - validator
+    expose:
+      - 5000
+    ports:
+      - "5000:5000"
+    volumes:
+    - ./hangman-web-py/code:/code

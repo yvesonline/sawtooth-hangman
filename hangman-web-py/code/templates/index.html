@@ -1,0 +1,10 @@
+Hangman
+
+<script>
+
+	var s = new WebSocket("ws://localhost:5000/zmq");
+	s.onmessage = function (event) {
+		console.log(event.data);
+	}
+
+</script>

@@ -59,7 +59,7 @@ class HangmanTransactionHandler(TransactionHandler):
             LOGGER.debug("Action: delete")
             try:
                 hm_state.delete_game(hm_payload.name)
-                LOGGER.info("Player '{}' delete game '{}'".format(signer, hm_payload.name))
+                LOGGER.info("Player '{}' deleted game '{}'".format(signer, hm_payload.name))
             except KeyError:
                 raise InvalidTransaction("Game '{}' doesn't exist".format(hm_payload.name))
         elif hm_payload.action == "guess":
