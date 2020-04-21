@@ -17,12 +17,12 @@ version: "2.1"
 
 services:
 
-#  settings-tp:
-#    image: hyperledger/sawtooth-settings-tp:chime
-#    container_name: sawtooth-settings-tp-default
-#    depends_on:
-#      - validator
-#    entrypoint: settings-tp -vv -C tcp://validator:4004
+  settings-tp:
+    image: hyperledger/sawtooth-settings-tp:chime
+    container_name: sawtooth-settings-tp-default
+    depends_on:
+      - validator
+    entrypoint: settings-tp -vv -C tcp://validator:4004
 
 #  intkey-tp-python:
 #    image: hyperledger/sawtooth-intkey-tp-python:chime

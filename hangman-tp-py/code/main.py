@@ -13,11 +13,11 @@ from handler import HangmanTransactionHandler
 APP_NAME = "Hangman Transaction Processor"
 
 
-def create_console_handler(verbose_level):
+def create_console_handler(log_level):
     clog = logging.StreamHandler()
     formatter = ColoredFormatter(
         "%(log_color)s[%(asctime)s.%(msecs)03d "
-        "%(levelname)-8s %(module)s]%(reset)s "
+        "%(levelname)-8s %(module)s %(lineno)d]%(reset)s "
         "%(white)s%(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         reset=True,
@@ -29,7 +29,7 @@ def create_console_handler(verbose_level):
             "CRITICAL": "red",
         })
     clog.setFormatter(formatter)
-    clog.setLevel(logging.DEBUG)
+    clog.setLevel(log_level)
     return clog
 
 

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3.5
 # encoding: utf-8
 
+import logging
+
 import hashlib
 
 from enum import Enum
 
 from cbor2 import dumps, loads
 
-from sawtooth_sdk.processor.exceptions import InternalError
-
+LOGGER = logging.getLogger(__name__)
 HM_NAMESPACE = hashlib.sha512("hangman".encode("utf-8")).hexdigest()[0:6]
 TIMEOUT = 3
 
@@ -24,8 +25,13 @@ class GameState(Enum):
     lost = 3
 
 
+GAME_STATE_ONGOING = 1
+GAME_STATE_WON = 2
+GAME_STATE_LOST = 3
+
+
 class Game:
-    def __init__(self, name="", word="", misses="", hits="", host="", guesser="", state=GameState.ongoing):
+    def __init__(self, name="", word="", misses="", hits="", host="", guesser="", state=GAME_STATE_ONGOING):
         self.name = name
         self.word = word
         self.misses = misses
@@ -37,13 +43,13 @@ class Game:
     @classmethod
     def from_dict(cls, d):
         return cls(
-            d["name"],
-            d["word"],
-            d["misses"],
-            d["hits"],
-            d["host"],
-            d["guesser"],
-            d["state"]
+            name=d["name"],
+            word=d["word"],
+            misses=d["misses"],
+            hits=d["hits"],
+            host=d["host"],
+            guesser=d["guesser"],
+            state=d["state"]
         )
 
     def to_dict(self):
@@ -73,19 +79,27 @@ class HmState:
     def set_game(self, name, game):
         address = _make_hm_address(name)
         state_s = self._context.get_state([address], timeout=TIMEOUT)
-        if state_s:
-            state_de = loads(state_s)
+        LOGGER.debug("Retrieved serialized state: {}".format(state_s))
+        LOGGER.debug("length: {}".format(len(state_s)))
+        LOGGER.debug("type: {}".format(type(state_s)))
+        if len(state_s) > 0:
+            state_de = loads(state_s[0].data)
         else:
             state_de = []
         state_de.append(game.to_dict())
         state_s = dumps(state_de)
+        LOGGER.debug("Setting state: {} ({})".format(state_de, state_s))
         self._context.set_state({address: state_s}, timeout=TIMEOUT)
 
     def get_game(self, name):
         address = _make_hm_address(name)
         state_s = self._context.get_state([address], timeout=TIMEOUT)
-        if state_s:
-            state_de = loads(state_s)
+        LOGGER.debug("Retrieved serialized state: {}".format(state_s))
+        LOGGER.debug("length: {}".format(len(state_s)))
+        LOGGER.debug("type: {}".format(type(state_s)))
+        if len(state_s) > 0:
+            state_de = loads(state_s[0].data)
+            LOGGER.debug("Retrieved deserialized state: {}".format(state_de))
             return Game.from_dict(state_de[-1])
         else:
             return None

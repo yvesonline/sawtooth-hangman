@@ -1,3 +1,4 @@
 sawtooth-sdk==1.2.3
 cbor2==5.1.0
 inquirer==2.6.3
+requests==2.23.0
