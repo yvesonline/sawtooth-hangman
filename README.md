@@ -50,6 +50,7 @@ f49dee7053ef	sawtoothhangman_hangman-tp-py			Up 41 seconds
 e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 8a123aa4e026	hyperledger/sawtooth-validator:chime		Up 45 seconds
 ```
+- Don't forget to power down the containers correctly with: `docker-compose down`
 
 ### CLI
 - Connect to the container: `docker exec -it hangman-cli-py /bin/bash`
@@ -62,12 +63,13 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 - [Hyperledger Sawtooth Python SDK](https://github.com/hyperledger/sawtooth-sdk-python/)
 - [Core repository for Sawtooth Distributed Ledger](https://github.com/hyperledger/sawtooth-core)
 - [Sawtooth Documentation](https://sawtooth.hyperledger.org/docs/core/releases/latest/contents.html)
+- [Endpoint Specifications](https://sawtooth.hyperledger.org/docs/core/releases/latest/rest_api/endpoint_specs.html)
 
 ## To-Do List
 
 - Document `processor`
 - Document message passing
-- Create proper game flow in `hmcli`
+- Extend CLI with commands to inspect blockchain
 - Finish barebone web interface
 - Remove volume declarations from `docker-compose.yaml`
 - Don't use random private keys, let the user supply their own public/private keys (e.g. via an environment variable or command line parameter)

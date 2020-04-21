@@ -5,22 +5,34 @@ import logging
 
 import hashlib
 
+import base64
+
+import re
+
+import string
+
 import inquirer
 
 import requests
 
-from cbor2 import dumps
+from cbor2 import dumps, loads
 
 from colorlog import ColoredFormatter
 
+from time import sleep
+
 from sawtooth_signing import create_context, CryptoFactory
-from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader, Transaction
+from sawtooth_sdk.protobuf.transaction_pb2 import Transaction
+from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
 from sawtooth_sdk.protobuf.batch_pb2 import BatchHeader, Batch, BatchList
+
+from hmascii import HANGMAN
 
 APP_NAME = "Hangman CLI"
 
 VALIDATOR_URL = "http://rest-api:8008"
-VALIDATOR_ENDPOINT = "/batches"
+VALIDATOR_ENDPOINT_BATCHES = VALIDATOR_URL + "/batches"
+VALIDATOR_ENDPOINT_STATE = VALIDATOR_URL + "/state/{}"
 
 HM_NAMESPACE = hashlib.sha512("hangman".encode("utf-8")).hexdigest()[0:6]
 
@@ -84,15 +96,26 @@ class HangmanCLI:
         # Set up logger
         self.logger = init_logging()
 
-    def send_message(self, name, action, guess):
+    def send_get_message(self, url):
+        r = requests.get(url)
+        return r.json()
+
+    def decode(self, data):
+        return base64.b64decode(data)
+
+    def send_post_message(self, name, action, guess):
         batch_list_bytes = self.create_message(name, action, guess)
         headers = {"Content-Type": "application/octet-stream"}
         r = requests.post(
-            VALIDATOR_URL + VALIDATOR_ENDPOINT,
+            VALIDATOR_ENDPOINT_BATCHES,
             data=batch_list_bytes,
             headers=headers
         )
+        ret_json = r.json()
+        self.logger.debug("POST RETURN: {}".format(ret_json))
         r.raise_for_status()
+        if "link" in ret_json:
+            return ret_json["link"]
 
     def create_message(self, name, action, guess):
         payload_bytes = self.create_payload(name, action, guess)
@@ -170,18 +193,62 @@ and remembered until you exit the {}""".format(APP_NAME))
     def interactive_loop_create_game(self):
         name = inquirer.text(message="Enter game name")
         word = inquirer.text(message="Enter word to guess")
-        self.send_message(name, "create", word)
+        self.send_post_message(name, "create", word)
+        print("Created game '{}' {}".format(name, self.success_symbol))
 
     def interactive_loop_delete_game(self):
         name = inquirer.text(message="Enter game name")
-        self.send_message(name, "delete", "")
+        self.send_post_message(name, "delete", "")
+        print("Deleted game '{}' {}".format(name, self.success_symbol))
 
     def interactive_loop_make_a_guess(self):
         name = inquirer.text(message="Enter game name")
+        self.sub_interactive_loop_make_a_guess(name)
+
+    def sub_interactive_loop_make_a_guess(self, name):
         guess = ""
         while len(guess) == 0 or len(guess) > 1:
             guess = inquirer.text(message="Type a letter to guess...")
-        self.send_message(name, "guess", guess)
+        link = self.send_post_message(name, "guess", guess)
+        if link:
+            status = "PENDING"
+            counter = 0
+            while status == "PENDING":
+                ret_json = self.send_get_message(link)
+                status = ret_json["data"][0]["status"]
+                counter += 1
+                sleep(1)
+                if counter >= 10:
+                    break
+        state = self.send_get_message(
+            VALIDATOR_ENDPOINT_STATE.format(_make_hm_address(name))
+        )
+        decoded_state = self.decode(state["data"])
+        game = loads(decoded_state)
+        current_game = game[-1]
+        self.print_game(current_game)
+        if current_game["state"] == 1:
+            again = inquirer.confirm("Guess again?", default=True)
+            if again:
+                self.sub_interactive_loop_make_a_guess(name)
+
+    def print_game(self, game):
+        print("{}".format(HANGMAN[len(game["misses"])]))
+        hits = game["hits"]
+        hidden_lower = list(set(string.ascii_lowercase) - set(hits))
+        hidden_upper = list(set(string.ascii_uppercase) - set(hits.upper()))
+        hidden = hidden_lower + hidden_upper
+        word = game["word"]
+        misses = game["misses"]
+        print("Word:\t{}".format(re.sub("|".join([h for h in hidden]), "_", word)))
+        print("Misses:\t{}".format(" ".join([m for m in misses])))
+        if game["state"] == 1:
+            print("State:\tKEEP GOING ;-)")
+        elif game["state"] == 2:
+            print("State:\tYOU WON :-)")
+        elif game["state"] == 3:
+            print("State:\tGAME OVER :-(")
+        print("")
 
     def process(self):
         # Enter interactive loop

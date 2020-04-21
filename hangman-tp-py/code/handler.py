@@ -10,7 +10,7 @@ from state import Game, HmState, HM_NAMESPACE, GAME_STATE_ONGOING, GAME_STATE_WO
 from payload import HmPayload
 
 LOGGER = logging.getLogger(__name__)
-MAX_GUESSES = 8
+MAX_GUESSES = 6
 
 
 class HangmanTransactionHandler(TransactionHandler):
@@ -64,6 +64,7 @@ class HangmanTransactionHandler(TransactionHandler):
                 raise InvalidTransaction("Game '{}' doesn't exist".format(hm_payload.name))
         elif hm_payload.action == "guess":
             LOGGER.debug("Action: guess")
+            guess = hm_payload.guess.lower()
             # Game doesn't exist
             game = hm_state.get_game(hm_payload.name)
             if not game:
@@ -72,16 +73,16 @@ class HangmanTransactionHandler(TransactionHandler):
             if game.state != GAME_STATE_ONGOING:
                 raise InvalidTransaction("Game '{}' has already ended".format(hm_payload.name))
             # Guess already in hits
-            if hm_payload.guess in game.hits:
-                raise InvalidTransaction("You already guessed '{}' and it was successful".format(hm_payload.guess))
+            if guess in game.hits:
+                raise InvalidTransaction("You already guessed '{}' and it was successful".format(guess))
             # Guess already in misses
-            if hm_payload.guess in game.misses:
-                raise InvalidTransaction("You already guessed '{}' and it was not successful".format(hm_payload.guess))
+            if guess in game.misses:
+                raise InvalidTransaction("You already guessed '{}' and it was not successful".format(guess))
             LOGGER.debug("Error handling completed")
             # Compute new game
-            new_misses = game.misses + hm_payload.guess if hm_payload.guess not in game.word else game.misses
-            new_hits = game.hits + hm_payload.guess if hm_payload.guess in game.word else game.hits
-            if set(game.word) == set(new_hits):
+            new_misses = game.misses + guess if guess not in game.word.lower() else game.misses
+            new_hits = game.hits + guess if guess in game.word.lower() else game.hits
+            if set(game.word.lower()) == set(new_hits):
                 new_state = GAME_STATE_WON
             elif len(new_misses) >= MAX_GUESSES:
                 new_state = GAME_STATE_LOST
