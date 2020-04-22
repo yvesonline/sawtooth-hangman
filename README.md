@@ -89,6 +89,8 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 - Connect to the container: `docker exec -it hangman-cli-py /bin/bash`
 - Start the interactive CLI: `./code/hmcli.py`
 
+![hangman-cli-py_video.svg](hangman-cli-py_video.svg "CLI")
+
 ### Web Interface
 
 Point your browser to: `http://localhost:5000/`
