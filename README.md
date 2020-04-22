@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-This repository contains an implementation of [Hangman](https://en.wikipedia.org/wiki/Hangman_(game)) based on top of the [Sawtooth Distributed Ledger](https://www.hyperledger.org/projects/sawtooth) to showcase the technology. I was inspired by the [Tic-Tac-Toe example](https://github.com/hyperledger/sawtooth-sdk-python/tree/master/examples/xo_python) from the Sawtooth repository.
+This repository contains an implementation of [Hangman](https://en.wikipedia.org/wiki/Hangman_(game)) based on top of the [Sawtooth Distributed Ledger](https://www.hyperledger.org/projects/sawtooth) to showcase the technology. I was inspired by the [Tic-Tac-Toe example](https://github.com/hyperledger/sawtooth-sdk-python/tree/master/examples/xo_python) from the Sawtooth repository. This is meant to be a proof of concept so it's by far not feature complete.
 
 ## Design Decisions
 
@@ -53,11 +53,21 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 - Don't forget to power down the containers correctly with: `docker-compose down`
 
 ### CLI
+
 - Connect to the container: `docker exec -it hangman-cli-py /bin/bash`
 - Start the interactive CLI: `./code/hmcli.py`
 
 ### Web Interface
-- Point your browser to: `http://localhost:5000/`
+
+Point your browser to: `http://localhost:5000/`
+
+You'll see something like this:
+![hangman-web-py_browser-highlighted.png](hangman-web-py_browser-highlighted.png "Web Interface")
+
+- The view updates automatically as events are being received by Sawtooth.
+- By default only one game will be displayed, whatever last move was done in whatever last game will be displayed.
+- The console logs the data which was received, complete with previous block information., ...
+- ...as well as the current decoded state of the game.
 
 ## Links
 - [Hyperledger Sawtooth Python SDK](https://github.com/hyperledger/sawtooth-sdk-python/)
@@ -65,14 +75,21 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 - [Sawtooth Documentation](https://sawtooth.hyperledger.org/docs/core/releases/latest/contents.html)
 - [Endpoint Specifications](https://sawtooth.hyperledger.org/docs/core/releases/latest/rest_api/endpoint_specs.html)
 
+## Disclaimer
+
+Please note, due to time constraints while creating this proof of concept I wasn't able to follow several best practices in software engineering I'd otherwise follow.
+- No tests - I was focusing on the proof of concept and showcasing the technology so no tests are provided.
+- Limited tooling - Developing and debugging is not easy as I didn't focus on setting up or optimizing the tooling.
+- Limited documentation - I tried to note down the main thought process but this is far from complete and what I'd usually consider good documentation.
+
 ## To-Do List
 
-- Add disclaimer to README
 - Document `processor`
 - Document message passing
 - Document CLI
+- Add video of CLI
+- Document web interface
 - Extend CLI with commands to inspect blockchain
-- Finish barebone web interface
 - Add tests
 - Remove volume declarations from `docker-compose.yaml`
 - Don't use random private keys, let the user supply their own public/private keys (e.g. via an environment variable or command line parameter)
