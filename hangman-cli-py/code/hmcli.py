@@ -33,17 +33,20 @@ APP_NAME = "Hangman CLI"
 VALIDATOR_URL = "http://rest-api:8008"
 VALIDATOR_ENDPOINT_BATCHES = VALIDATOR_URL + "/batches"
 VALIDATOR_ENDPOINT_STATE = VALIDATOR_URL + "/state/{}"
+VALIDATOR_ENDPOINT_BLOCKS = VALIDATOR_URL + "/blocks?limit={}"
 
 HM_NAMESPACE = hashlib.sha512("hangman".encode("utf-8")).hexdigest()[0:6]
 
 CHOICE_CREATE_GAME = "CREATE_GAME"
 CHOICE_DELETE_GAME = "DELETE_GAME"
 CHOICE_MAKE_A_GUESS = "MAKE_A_GUESS"
+CHOICE_GET_LIST_OF_BLOCKS = "GET_LIST_OF_BLOCKS"
 CHOICE_EXIT = "EXIT"
 CHOICES = [
     ("Create game", CHOICE_CREATE_GAME),
     ("Delete game", CHOICE_DELETE_GAME),
     ("Make a guess", CHOICE_MAKE_A_GUESS),
+    ("Get list of blocks", CHOICE_GET_LIST_OF_BLOCKS),
     ("Exit", CHOICE_EXIT),
 ]
 
@@ -189,6 +192,8 @@ and remembered until you exit the {}""".format(APP_NAME))
                 self.interactive_loop_delete_game()
             elif choice == CHOICE_MAKE_A_GUESS:
                 self.interactive_loop_make_a_guess()
+            elif choice == CHOICE_GET_LIST_OF_BLOCKS:
+                self.interactive_loop_get_list_of_blocks()
 
     def interactive_loop_create_game(self):
         name = inquirer.text(message="Enter game name")
@@ -200,6 +205,32 @@ and remembered until you exit the {}""".format(APP_NAME))
         name = inquirer.text(message="Enter game name")
         self.send_post_message(name, "delete", "")
         print("Deleted game '{}' {}".format(name, self.success_symbol))
+
+    def interactive_loop_get_list_of_blocks(self):
+        number_of_blocks = 0
+        number_of_blocks_to_display = 1000
+        blocks = self.send_get_message(
+            VALIDATOR_ENDPOINT_BLOCKS.format(number_of_blocks_to_display, 0)
+        )
+        number_of_blocks += len(blocks["data"])
+        if number_of_blocks == number_of_blocks_to_display:
+            print("Number of blocks: {}+".format(number_of_blocks))
+        else:
+            print("Number of blocks: {}".format(number_of_blocks))
+        for block in blocks["data"]:
+            print(86 * "-")
+            print("Block number:      {:s}".format(block["header"]["block_num"]))
+            print("Number of batches: {:d} ({})".format(
+                len(block["header"]["batch_ids"]),
+                ", ".join(["batch {}: {} txn".format(idx, len(tx["transactions"])) for idx, tx in enumerate(block["batches"])])
+            ))
+            print("Block id:          ...{}".format(
+                block["header_signature"][-64:] if len(block["header_signature"]) > 64 else block["header_signature"]
+            ))
+            print("Previous block id: ...{}".format(
+                block["header"]["previous_block_id"][-64:] if len(block["header"]["previous_block_id"]) > 64 else block["header"]["previous_block_id"]
+            ))
+        print("")
 
     def interactive_loop_make_a_guess(self):
         name = inquirer.text(message="Enter game name")
