@@ -4,12 +4,52 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hangman</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+    <link rel="stylesheet" href="static/bulma.min.css">
+    <script src="static/cbor.js" type="text/javascript"></script>
     <script>
 
-      var s = new WebSocket("ws://localhost:5000/zmq");
-      s.onmessage = function (event) {
-          console.log(event.data);
+      // Listening to WebSocket provided by Flask
+      // var ws = new WebSocket("ws://localhost:5000/zmq");
+      // ws.onmessage = function (event) {
+      //     console.log(event.data);
+      // }
+      // Listening to WebSocket provided by Sawtooth
+      let ws = new WebSocket("ws://localhost:8008/subscriptions");
+      // Doesn't seem to work, hence we have to convert manual later
+      ws.binaryType = "arraybuffer";
+      // Subscribe to events by Hangman, i.e. in our namespace "b89bcb"
+      ws.onopen = () => {
+        ws.send(JSON.stringify({
+          "action": "subscribe",
+          "address_prefixes": ["b89bcb"]
+        }))
+      }
+      // Needed for the conversion to an ArrayBuffer
+      let enc = new TextEncoder();
+      // Message receive loop
+      ws.onmessage = function (event) {
+        console.log(event); // Debug
+        console.log(event.data); // Debug
+        // Parse the data we've received
+        let d = JSON.parse(event.data);
+        console.log(d); // Debug
+        if (d["state_changes"].length > 0) {
+          // Decode the base64 encoded data
+          let b64decoded = atob(d["state_changes"][0]["value"]);
+          // Decode the CBOR encoded data
+          let decoded = CBOR.decode(enc.encode(b64decoded).buffer);
+          console.log(decoded[0]); // Debug
+          // Update image
+
+          // Update word
+
+          // Update name
+
+          // Update misses
+
+          // Update state
+
+        }
       }
 
     </script>
@@ -18,26 +58,26 @@
     <section class="section">
       <div class="container">
         <h1 class="title">Hangman</h1>
-        <div id="game1">
+        <div id="game">
           <div class="card">
             <div class="card-content">
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-72x72">
-                    <img id="game1-image" src="60px-Hangman-0.png" alt="Hangman placeholder image">
+                    <img id="game-image" src="static/60px-Hangman-0.png" alt="Hangman placeholder image">
                   </figure>
                 </div>
                 <div class="media-content">
-                  <p class="title is-8" id="game1-word">{{word}}</p>
+                  <p class="title is-8" id="game-word">{{word}}</p>
                 </div>
               </div>
 
               <div class="content">
-                Game: <span id="game1-name">{{name}}</span>
+                Game: <span id="game-name">{{name}}</span>
                 <br />
-                Misses: <span id="game1-misses">{{misses}}</span>
+                Misses: <span id="game-misses">{{misses}}</span>
                 <br />
-                State: <span id="game1-state">{{state}}</span>
+                State: <span id="game-state">{{state}}</span>
               </div>
             </div>
           </div>

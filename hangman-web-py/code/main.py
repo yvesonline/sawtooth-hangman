@@ -6,7 +6,7 @@ import logging
 import zmq.green as zmq
 
 from flask_sockets import Sockets
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 
 from sawtooth_sdk.protobuf.events_pb2 import EventSubscription, EventFilter, EventList
 from sawtooth_sdk.protobuf.client_event_pb2 import ClientEventsSubscribeRequest, ClientEventsSubscribeResponse
@@ -82,21 +82,27 @@ def zmq_socket(ws):
             # Parse the response
             events = EventList()
             events.ParseFromString(msg.content)
-            print(events)
+            LOGGER.debug("Received events")
+            LOGGER.debug(events)
             # for event in events:
             #     print(event)
             # Eventually what we want to do here is ws.send(events)
             # But before we have to unpack it!!!
         elif msg.message_type == Message.PING_REQUEST:
-            print("Received ping request")
+            LOGGER.debug("Received ping request")
             ws.send("ping request")
         else:
-            print("Unexpected message type '{}'".format(msg.message_type))
+            LOGGER.warn("Unexpected message type '{}'".format(msg.message_type))
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/static/<path:path>")
+def send_static(path):
+    return send_from_directory("static", path)
 
 
 if __name__ == "__main__":
