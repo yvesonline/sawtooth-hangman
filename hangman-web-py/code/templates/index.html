@@ -28,8 +28,8 @@
       let enc = new TextEncoder();
       // Message receive loop
       ws.onmessage = function (event) {
-        console.log(event); // Debug
-        console.log(event.data); // Debug
+        // console.log(event); // Debug
+        // console.log(event.data); // Debug
         // Parse the data we've received
         let d = JSON.parse(event.data);
         console.log(d); // Debug
@@ -38,17 +38,34 @@
           let b64decoded = atob(d["state_changes"][0]["value"]);
           // Decode the CBOR encoded data
           let decoded = CBOR.decode(enc.encode(b64decoded).buffer);
-          console.log(decoded[0]); // Debug
+          console.log(decoded[decoded.length - 1]); // Debug
+          let game = decoded[decoded.length - 1];
+          let round = game["misses"].length;
+          // console.log("Round: " + round); // Debug
           // Update image
-
+          document.getElementById("game-image").src = "static/60px-Hangman-" + round + ".png";
           // Update word
-
+          let abc = "abcdefghijklmnopqrstuvwxyz";
+          let replace = "[" + game["hits"] + "]";
+          let re = new RegExp(replace, "g");
+          abc = abc.replace(re, "");
+          replace = "[" + abc + abc.toUpperCase() + "]";
+          re = new RegExp(replace, "g");
+          document.getElementById("game-word").innerHTML = game["word"].replace(re, "_");
           // Update name
-
+          document.getElementById("game-name").innerHTML = game["name"];
           // Update misses
-
+          document.getElementById("game-misses").innerHTML = game["misses"];
           // Update state
-
+          let state = "";
+          if (game["state"] == 1) {
+            state = "KEEP GOING ;-)";
+          } else if (game["state"] == 2) {
+            state = "YOU WON :-)";
+          } else if (game["state"] == 3) {
+            state = "GAME OVER :-(";
+          }
+          document.getElementById("game-state").innerHTML = state;
         }
       }
 

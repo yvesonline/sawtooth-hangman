@@ -67,6 +67,7 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 
 ## To-Do List
 
+- Add disclaimer to README
 - Document `processor`
 - Document message passing
 - Document CLI
