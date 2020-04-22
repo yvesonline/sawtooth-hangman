@@ -1,10 +1,48 @@
-Hangman
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+    <script>
 
-<script>
+      var s = new WebSocket("ws://localhost:5000/zmq");
+      s.onmessage = function (event) {
+          console.log(event.data);
+      }
 
-	var s = new WebSocket("ws://localhost:5000/zmq");
-	s.onmessage = function (event) {
-		console.log(event.data);
-	}
+    </script>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Hangman</h1>
+        <div id="game1">
+          <div class="card">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <figure class="image is-72x72">
+                    <img id="game1-image" src="60px-Hangman-0.png" alt="Hangman placeholder image">
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <p class="title is-8" id="game1-word">{{word}}</p>
+                </div>
+              </div>
 
-</script>
+              <div class="content">
+                Game: <span id="game1-name">{{name}}</span>
+                <br />
+                Misses: <span id="game1-misses">{{misses}}</span>
+                <br />
+                State: <span id="game1-state">{{state}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

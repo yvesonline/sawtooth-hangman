@@ -69,8 +69,10 @@ e544d1633ace	sawtoothhangman_hangman-client-py		Up 43 seconds
 
 - Document `processor`
 - Document message passing
+- Document CLI
 - Extend CLI with commands to inspect blockchain
 - Finish barebone web interface
+- Add tests
 - Remove volume declarations from `docker-compose.yaml`
 - Don't use random private keys, let the user supply their own public/private keys (e.g. via an environment variable or command line parameter)
 - Implement correct `host`/`guesser` handling, right now everyone can make a guess ;-)
