@@ -31,7 +31,8 @@ GAME_STATE_LOST = 3
 
 
 class Game:
-    def __init__(self, name="", word="", misses="", hits="", host="", guesser="", state=GAME_STATE_ONGOING):
+    def __init__(self, name="", word="", misses="",
+                 hits="", host="", guesser="", state=GAME_STATE_ONGOING):
         self.name = name
         self.word = word
         self.misses = misses

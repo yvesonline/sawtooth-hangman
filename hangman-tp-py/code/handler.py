@@ -6,7 +6,10 @@ import logging
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 
-from state import Game, HmState, HM_NAMESPACE, GAME_STATE_ONGOING, GAME_STATE_WON, GAME_STATE_LOST
+from state import (
+    Game, HmState, HM_NAMESPACE,
+    GAME_STATE_ONGOING, GAME_STATE_WON, GAME_STATE_LOST
+)
 from payload import HmPayload
 
 LOGGER = logging.getLogger(__name__)

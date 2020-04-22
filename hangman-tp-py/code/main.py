@@ -41,8 +41,10 @@ def init_logging(log_level=logging.DEBUG):
 
 if __name__ == "__main__":
     # Declare the arguments
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=APP_NAME)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=APP_NAME
+    )
     parser.add_argument(
         "--validator",
         dest="validator",
