@@ -8,5 +8,4 @@ COPY code/ /code/
 
 ENV FLASK_APP=code/main.py
 
-# CMD ["flask", "run", "--host=0.0.0.0"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["python3", "code/main.py"]
