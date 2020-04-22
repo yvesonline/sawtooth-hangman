@@ -5,7 +5,6 @@ import logging
 import argparse
 
 from colorlog import ColoredFormatter
-
 from sawtooth_sdk.processor.core import TransactionProcessor
 
 from handler import HangmanTransactionHandler
@@ -14,6 +13,14 @@ APP_NAME = "Hangman Transaction Processor"
 
 
 def create_console_handler(log_level):
+    """
+    Set up colored console logging.
+
+    Arguments:
+        log_level: The log level to set.
+    Returns:
+        The configured colored console logger.
+    """
     clog = logging.StreamHandler()
     formatter = ColoredFormatter(
         "%(log_color)s[%(asctime)s.%(msecs)03d "
@@ -34,6 +41,14 @@ def create_console_handler(log_level):
 
 
 def init_logging(log_level=logging.DEBUG):
+    """
+    Initialize logging.
+
+    Arguments:
+        log_level: The log level to set, by default `logging.DEBUG`.
+    Returns:
+        -
+    """
     logger = logging.getLogger()
     logger.setLevel(log_level)
     logger.addHandler(create_console_handler(log_level))

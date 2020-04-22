@@ -12,7 +12,10 @@ from state import (
 )
 from payload import HmPayload
 
+# Set up logging
 LOGGER = logging.getLogger(__name__)
+
+# The number of guesses until a game is declared lost
 MAX_GUESSES = 6
 
 
@@ -43,6 +46,7 @@ class HangmanTransactionHandler(TransactionHandler):
         hm_state = HmState(context)
 
         if hm_payload.action == "create":
+            # Game creation was requested
             LOGGER.debug("Action: create")
             game = hm_state.get_game(hm_payload.name)
             if game:
@@ -59,6 +63,7 @@ class HangmanTransactionHandler(TransactionHandler):
             hm_state.set_game(hm_payload.name, game)
             LOGGER.info("Player '{}' created game '{}'".format(signer, hm_payload.name))
         elif hm_payload.action == "delete":
+            # Game deletion was requested
             LOGGER.debug("Action: delete")
             try:
                 hm_state.delete_game(hm_payload.name)
@@ -66,6 +71,7 @@ class HangmanTransactionHandler(TransactionHandler):
             except KeyError:
                 raise InvalidTransaction("Game '{}' doesn't exist".format(hm_payload.name))
         elif hm_payload.action == "guess":
+            # Someone is guessing
             LOGGER.debug("Action: guess")
             guess = hm_payload.guess.lower()
             # Game doesn't exist

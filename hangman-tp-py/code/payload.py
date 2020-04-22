@@ -4,14 +4,25 @@
 import logging
 
 from cbor2 import loads
-
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 
+# Set up logging
 LOGGER = logging.getLogger(__name__)
 
 
 class HmPayload:
+    """
+    A Hangman Payload description, short `HmPayload`.
+    Information is sent in Concise Binary Object Representation,
+    see https://en.wikipedia.org/wiki/CBOR, so we use `cbor2`
+    to decode information here.
+
+    Arguments:
+        payload: The payload to initialize with.
+    """
+
     def __init__(self, payload):
+        """Initializes Hangman Payload with `payload`."""
         payload_de = loads(payload)
         if "name" not in payload_de:
             raise InvalidTransaction("Name is required")

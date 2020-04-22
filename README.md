@@ -33,7 +33,15 @@ The payload of a message has the following attributes: `name`, `action` and `gue
 ## Contents
 
 ```
-
+├── hangman-tp-py
+│   ├── code
+│   │   ├── handler.py <- Handles create, delete and guess actions
+│   │   ├── __init__.py
+│   │   ├── main.py <- Main file which registers the handler and starts the TransactionProcessor
+│   │   ├── payload.py <- Describes `HmPayload`
+│   │   └── state.py <- Describes `HmState` and `Game`
+│   ├── Dockerfile
+│   └── requirements.txt
 ├── hangman-web-py
 │   ├── code
 │   │   ├── main.py <- Main file which starts the Flask app.
@@ -53,6 +61,8 @@ The payload of a message has the following attributes: `name`, `action` and `gue
 │   └── requirements.txt
 
 ```
+
+I'm following [PEP8](https://www.python.org/dev/peps/pep-0008/) and the [Google Python Style Guide](http://google.github.io/styleguide/pyguide.html) throughout the code.
 
 ## Usage
 
@@ -106,8 +116,6 @@ Please note, due to time constraints while creating this proof of concept I wasn
 
 ## To-Do List
 
-- Document `processor`
-- Document message passing
 - Document CLI
 - Add video of CLI
 - Extend CLI with commands to inspect blockchain
