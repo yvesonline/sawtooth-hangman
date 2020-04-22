@@ -2,25 +2,18 @@
 # encoding: utf-8
 
 import logging
-
 import hashlib
-
 import base64
-
 import re
-
 import string
 
 import inquirer
-
 import requests
 
-from cbor2 import dumps, loads
-
 from colorlog import ColoredFormatter
-
 from time import sleep
 
+from cbor2 import dumps, loads
 from sawtooth_signing import create_context, CryptoFactory
 from sawtooth_sdk.protobuf.transaction_pb2 import Transaction
 from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
@@ -30,13 +23,16 @@ from hmascii import HANGMAN
 
 APP_NAME = "Hangman CLI"
 
+# Sawtooth REST API endpoints which we're going to use
 VALIDATOR_URL = "http://rest-api:8008"
 VALIDATOR_ENDPOINT_BATCHES = VALIDATOR_URL + "/batches"
 VALIDATOR_ENDPOINT_STATE = VALIDATOR_URL + "/state/{}"
 VALIDATOR_ENDPOINT_BLOCKS = VALIDATOR_URL + "/blocks?limit={}"
 
+# The prefix for the Hangman address space, translates to `b89bcb`
 HM_NAMESPACE = hashlib.sha512("hangman".encode("utf-8")).hexdigest()[0:6]
 
+# The main choices for our CLI
 CHOICE_CREATE_GAME = "CREATE_GAME"
 CHOICE_DELETE_GAME = "DELETE_GAME"
 CHOICE_MAKE_A_GUESS = "MAKE_A_GUESS"
@@ -52,6 +48,14 @@ CHOICES = [
 
 
 def create_console_handler(log_level):
+    """
+    Set up colored console logging.
+
+    Arguments:
+        log_level: The log level to set.
+    Returns:
+        The configured colored console logger.
+    """
     clog = logging.StreamHandler()
     formatter = ColoredFormatter(
         "%(log_color)s[%(asctime)s.%(msecs)03d "
@@ -71,7 +75,15 @@ def create_console_handler(log_level):
     return clog
 
 
-def init_logging(log_level=logging.DEBUG):
+def init_logging(log_level=logging.WARN):
+    """
+    Initialize logging.
+
+    Arguments:
+        log_level: The log level to set, by default `logging.DEBUG`.
+    Returns:
+        -
+    """
     logger = logging.getLogger()
     logger.setLevel(log_level)
     logger.addHandler(create_console_handler(log_level))
@@ -79,6 +91,20 @@ def init_logging(log_level=logging.DEBUG):
 
 
 def _make_hm_address(name):
+    """
+    Creates an address in the Hangman address space
+    in order to store state information.
+
+    E.g. for the game name "Game of Words":
+    - `HM_NAMESPACE`  = `b89bcb`
+    - `HM_GAME`       = `ee7c82d3cdfecf6d65c3c81be0c90e7fa015db96aafbe418e197cad7c52f0c34`
+    We return `HM_NAMESPACE` + `HM_GAME` to uniquely identify games in the address space.
+
+    Arguments:
+        name: The name of the game.
+    Returns:
+        An address in the Hangman address space (70 characters long).
+    """
     return HM_NAMESPACE + \
         hashlib.sha512(name.encode("utf-8")).hexdigest()[:64]
 

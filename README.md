@@ -116,9 +116,6 @@ Please note, due to time constraints while creating this proof of concept I wasn
 
 ## To-Do List
 
-- Document CLI
-- Add video of CLI
-- Extend CLI with commands to inspect blockchain
 - Add tests
 - Remove volume declarations from `docker-compose.yaml`
 - Don't use random private keys, let the user supply their own public/private keys (e.g. via an environment variable or command line parameter)
