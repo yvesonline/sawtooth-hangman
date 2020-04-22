@@ -32,6 +32,28 @@ The payload of a message has the following attributes: `name`, `action` and `gue
 
 ## Contents
 
+```
+
+├── hangman-web-py
+│   ├── code
+│   │   ├── main.py <- Main file which starts the Flask app.
+│   │   ├── static
+│   │   │   ├── 60px-Hangman-0.png
+│   │   │   ├── 60px-Hangman-1.png
+│   │   │   ├── 60px-Hangman-2.png
+│   │   │   ├── 60px-Hangman-3.png
+│   │   │   ├── 60px-Hangman-4.png
+│   │   │   ├── 60px-Hangman-5.png
+│   │   │   ├── 60px-Hangman-6.png
+│   │   │   ├── bulma.min.css
+│   │   │   └── cbor.js
+│   │   └── templates
+│   │       └── index.html <- Main template.
+│   ├── Dockerfile
+│   └── requirements.txt
+
+```
+
 ## Usage
 
 This assumes you have [Git](https://git-scm.com/), [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed.
@@ -88,7 +110,6 @@ Please note, due to time constraints while creating this proof of concept I wasn
 - Document message passing
 - Document CLI
 - Add video of CLI
-- Document web interface
 - Extend CLI with commands to inspect blockchain
 - Add tests
 - Remove volume declarations from `docker-compose.yaml`
