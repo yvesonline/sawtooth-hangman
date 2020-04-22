@@ -12,6 +12,7 @@ To showcase different aspects of Sawtooth I opted to split the implementation in
 - `hangman-web-py`: _Hangman Web Interface in Python_ - The last component showcases how to subscribe to events to the Sawtooth network via [ZeroMQ](https://zeromq.org/).
 
 ### Hangman State
+
 The state of a Hangman `Game` comprises the following attributes:
  - `name` - The name of the game, e.g. `My test game`
  - `word` - The word to be guessed, e.g. `Weatherman`
@@ -25,6 +26,7 @@ The state of a Hangman `Game` comprises the following attributes:
    - `GAME_STATE_LOST`
 
 ### Hangman Payload & Actions
+
 The payload of a message has the following attributes: `name`, `action` and `guess`
 - `name` - The name of the game
 - `action` - Can be either `create`, `delete` or `guess`
@@ -32,12 +34,22 @@ The payload of a message has the following attributes: `name`, `action` and `gue
 
 ## Contents
 
+This repository contains roughly the following files:
+
 ```
+├── docker-compose.yaml <- Controls starting/stopping the containers
+├── hangman-cli-py
+│   ├── code
+│   │   ├── hmascii.py
+│   │   ├── hmcli.py <- CLI application
+│   │   └── __init__.py
+│   ├── Dockerfile
+│   └── requirements.txt
 ├── hangman-tp-py
 │   ├── code
 │   │   ├── handler.py <- Handles create, delete and guess actions
 │   │   ├── __init__.py
-│   │   ├── main.py <- Main file which registers the handler and starts the TransactionProcessor
+│   │   ├── main.py <- Main file which registers the handler and starts the `TransactionProcessor`
 │   │   ├── payload.py <- Describes `HmPayload`
 │   │   └── state.py <- Describes `HmState` and `Game`
 │   ├── Dockerfile
@@ -45,21 +57,16 @@ The payload of a message has the following attributes: `name`, `action` and `gue
 ├── hangman-web-py
 │   ├── code
 │   │   ├── main.py <- Main file which starts the Flask app.
-│   │   ├── static
-│   │   │   ├── 60px-Hangman-0.png
-│   │   │   ├── 60px-Hangman-1.png
-│   │   │   ├── 60px-Hangman-2.png
-│   │   │   ├── 60px-Hangman-3.png
-│   │   │   ├── 60px-Hangman-4.png
-│   │   │   ├── 60px-Hangman-5.png
-│   │   │   ├── 60px-Hangman-6.png
+│   │   ├── static <- Static files used in conjunction with the template.
+│   │   │   ├── ...
 │   │   │   ├── bulma.min.css
 │   │   │   └── cbor.js
 │   │   └── templates
 │   │       └── index.html <- Main template.
 │   ├── Dockerfile
 │   └── requirements.txt
-
+├── ...
+└── README.md <- The file you're reading
 ```
 
 I'm following [PEP8](https://www.python.org/dev/peps/pep-0008/) and the [Google Python Style Guide](http://google.github.io/styleguide/pyguide.html) throughout the code.
